@@ -1,11 +1,12 @@
-import java.io.IOException;
+package mapreduce;
 
+import java.io.IOException;
 import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Mapper;
 
-public class SearchRequestsMapper extends Mapper<LongWritable, Text, Text, IntWritable> {
+public class SearchRequestMapper extends Mapper<LongWritable, Text, Text, IntWritable>  {
 
     @Override
     protected void map(LongWritable key, Text value, Context context)
