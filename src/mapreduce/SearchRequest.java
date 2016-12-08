@@ -1,3 +1,5 @@
+package mapreduce;
+
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.io.Text;
@@ -8,18 +10,15 @@ import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 public class SearchRequest {
 
     public static void main(String[] args) throws Exception {
-
-        String input = args[0];
-        String output = args[1];
-
         Job job = new Job();
         job.setJarByClass(SearchRequest.class);
-        job.setJobName("Search Request");
+        job.setJobName("SearchRequest");
 
-        FileInputFormat.addInputPath(job, new Path(input));
-        FileOutputFormat.setOutputPath(job, new Path(output));
+        FileInputFormat.addInputPath(job, new Path(args[0]));
+        FileOutputFormat.setOutputPath(job, new Path(args[1]));
 
         job.setMapperClass(SearchRequestMapper.class);
+        job.setCombinerClass(SearchRequestReducer.class);
         job.setReducerClass(SearchRequestReducer.class);
 
         job.setOutputKeyClass(Text.class);
