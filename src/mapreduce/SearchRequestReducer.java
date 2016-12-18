@@ -28,7 +28,7 @@ public class SearchRequestReducer extends Reducer<Text, DocumentInfo, Text, Text
             v.setIdf(Math.log(numberDocumentsInCorpus / (double) numberDocumentsWithToken));
             double tfidf = v.getTf() * v.getIdf();
             if (tfidf > threshold) {
-                Text newElem = new Text("[" + v.getFileName() + " , " + DF.format(tfidf) + "]");
+                Text newElem = new Text( v.getFileName() + " , " + DF.format(tfidf) );
                 fileList.add(newElem);
             }
         }

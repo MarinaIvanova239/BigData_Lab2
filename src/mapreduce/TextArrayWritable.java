@@ -19,7 +19,7 @@ public class TextArrayWritable extends ArrayWritable {
         Text[] values = get();
         String resultString = null;
         for (int i = 0; i < values.length; i++)
-            resultString += values[i].toString() + ',';
+            resultString += values[i].toString() + ';';
         return resultString;
     }
 }
