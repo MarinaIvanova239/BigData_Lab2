@@ -15,9 +15,7 @@ import org.tartarus.snowball.SnowballStemmer;
 import org.tartarus.snowball.ext.porterStemmer;
 
 import java.io.*;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.StringTokenizer;
+import java.util.*;
 
 public class SearchRequest  extends Configured implements Tool {
 
@@ -95,13 +93,17 @@ public class SearchRequest  extends Configured implements Tool {
         SnowballStemmer stemmer = new porterStemmer();
 
         Map<String, Map<String, Double>> wordsMap = readIndexFile(args[2]);
+        List<Map<String, Double>> documentSets = new ArrayList<Map<String, Double>>();
 
         while (tokenizer.hasMoreTokens()) {
             String word = tokenizer.nextToken().toLowerCase();
             stemmer.setCurrent(word);
             stemmer.stem();
             Map<String, Double> documentList = wordsMap.get(stemmer.getCurrent());
+            documentSets.add(documentList);
         }
+
+
 
         System.exit(0);
     }
