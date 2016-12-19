@@ -19,6 +19,8 @@ import java.util.*;
 
 public class SearchRequest  extends Configured implements Tool {
 
+    static private final String outputIndexFile = "output_index.txt";
+
     public int run(String[] args) throws Exception {
 
         Configuration conf = getConf();
@@ -30,7 +32,7 @@ public class SearchRequest  extends Configured implements Tool {
         job.setReducerClass(SearchRequestReducer.class);
 
         FileInputFormat.addInputPath(job, new Path(args[1]));
-        FileOutputFormat.setOutputPath(job, new Path(args[2]));
+        FileOutputFormat.setOutputPath(job, new Path(outputIndexFile));
 
         job.setOutputKeyClass(Text.class);
         job.setOutputValueClass(TextArrayWritable.class);
@@ -92,7 +94,7 @@ public class SearchRequest  extends Configured implements Tool {
 
         SnowballStemmer stemmer = new porterStemmer();
 
-        Map<String, Map<String, Double>> wordsMap = readIndexFile(args[2]);
+        Map<String, Map<String, Double>> wordsMap = readIndexFile(outputIndexFile);
         List<Map<String, Double>> documentSets = new ArrayList<Map<String, Double>>();
 
         while (tokenizer.hasMoreTokens()) {
@@ -103,7 +105,68 @@ public class SearchRequest  extends Configured implements Tool {
             documentSets.add(documentList);
         }
 
+        Collections.sort(documentSets, new Comparator<Map<String, Double>>() {
+            public int compare(Map<String, Double> firstSet, Map<String, Double> secondSet) {
+                return firstSet.size() < secondSet.size() ? -1 : 1;
+            }
+        });
 
+        List<Map.Entry<String, Double>> listFirst =
+                new LinkedList<Map.Entry<String, Double>>( documentSets.get(0).entrySet() );
+        Collections.sort(listFirst, new Comparator<Map.Entry<String, Double>>() {
+            public int compare(Map.Entry<String, Double> firstSet, Map.Entry<String, Double> secondSet) {
+                return firstSet.getKey().compareTo(secondSet.getKey());
+            }
+        });
+
+        for (Map<String, Double> set: documentSets) {
+            List<Map.Entry<String, Double>> listSecond =
+                    new LinkedList<Map.Entry<String, Double>>( set.entrySet() );
+            Collections.sort(listSecond, new Comparator<Map.Entry<String, Double>>() {
+                public int compare(Map.Entry<String, Double> firstSet, Map.Entry<String, Double> secondSet) {
+                    return firstSet.getKey().compareTo(secondSet.getKey());
+                }
+            });
+
+            int sizeFirstList = listFirst.size(), sizeSecondList = listSecond.size();
+            int indexFirst = 0, indexSecond = 0;
+            List<Map.Entry<String, Double>> resultSet = new LinkedList<Map.Entry<String, Double>>();
+            while (indexFirst < sizeFirstList && indexSecond < sizeSecondList) {
+                Map.Entry<String, Double> first = listFirst.get(indexFirst);
+                Map.Entry<String, Double> second = listFirst.get(indexSecond);
+
+                if (first.getKey().compareTo(second.getKey()) == 0) {
+                    resultSet.add(first);
+                    indexFirst++;
+                    indexSecond++;
+                } else if (first.getKey().compareTo(second.getKey()) < 0) {
+                    indexFirst++;
+                } else if (first.getKey().compareTo(second.getKey()) > 0) {
+                    indexSecond++;
+                }
+            }
+            listFirst.clear();
+            for (Map.Entry<String, Double> result: resultSet) {
+                listFirst.add(result);
+            }
+        }
+
+        Collections.sort(listFirst, new Comparator<Map.Entry<String, Double>>() {
+            public int compare(Map.Entry<String, Double> firstSet, Map.Entry<String, Double> secondSet) {
+                return secondSet.getValue().compareTo(firstSet.getValue());
+            }
+        });
+
+        try{
+            PrintWriter writer = new PrintWriter("output.txt", "UTF-8");
+            for (Map.Entry<String, Double> entry : listFirst) {
+                writer.println(entry.getKey());
+            }
+            writer.close();
+        } catch (IOException e) {
+            System.out.println("Error during writing file!");
+            throw e;
+        }
 
         System.exit(0);
     }
