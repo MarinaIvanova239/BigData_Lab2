@@ -19,11 +19,13 @@ public class SearchRequestReducer extends Reducer<Text, DocumentInfo, Text, Text
         int numberDocumentsInCorpus = Integer.parseInt(context.getJobName());
         ArrayList<Text> fileList = new ArrayList<Text>();
 
+        // count number of documents which contain current word
         int numberDocumentsWithToken = 0;
         for (DocumentInfo v : values) {
             numberDocumentsWithToken++;
         }
 
+        // count idf and tf-idf and save document, depending on comparison with threshold
         for (DocumentInfo v : values) {
             v.setIdf(Math.log(numberDocumentsInCorpus / (double) numberDocumentsWithToken));
             double tfidf = v.getTf() * v.getIdf();
@@ -32,6 +34,8 @@ public class SearchRequestReducer extends Reducer<Text, DocumentInfo, Text, Text
                 fileList.add(newElem);
             }
         }
+
+        // save result to context
         context.write(key, new TextArrayWritable(fileList.toArray(new Text[fileList.size()])));
     }
 }
