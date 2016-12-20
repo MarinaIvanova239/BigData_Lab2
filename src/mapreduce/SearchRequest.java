@@ -93,37 +93,7 @@ public class SearchRequest  extends Configured implements Tool {
         return index;
     }
 
-    public static void main(String[] args) throws Exception {
-
-        // run MapReduce to create file with invert index
-        int res = ToolRunner.run(new Configuration(), new SearchRequest(), args);
-        if (res == 1)
-            System.exit(1);
-
-        // read request string
-        String request = readRequestFile(args[0]);
-        StringTokenizer tokenizer = new StringTokenizer(request);
-
-        SnowballStemmer stemmer = new porterStemmer();
-
-        Map<String, Map<String, Double>> wordsMap = readIndexFile(outputIndexFile);
-        List<Map<String, Double>> documentSets = new ArrayList<Map<String, Double>>();
-
-        // stem each word in request string and corresponding set of documents
-        while (tokenizer.hasMoreTokens()) {
-            String word = tokenizer.nextToken().toLowerCase();
-            stemmer.setCurrent(word);
-            stemmer.stem();
-            Map<String, Double> documentList = wordsMap.get(stemmer.getCurrent());
-            documentSets.add(documentList);
-        }
-
-        // sort list of document sets by size of sets
-        Collections.sort(documentSets, new Comparator<Map<String, Double>>() {
-            public int compare(Map<String, Double> firstSet, Map<String, Double> secondSet) {
-                return firstSet.size() < secondSet.size() ? -1 : 1;
-            }
-        });
+    static List<Map.Entry<String, Double>> findIntersection(List<Map<String, Double>> documentSets) {
 
         // sort first document set by documents' names
         List<Map.Entry<String, Double>> listFirst =
@@ -172,8 +142,45 @@ public class SearchRequest  extends Configured implements Tool {
             }
         }
 
+        return listFirst;
+    }
+
+    public static void main(String[] args) throws Exception {
+
+        // run MapReduce to create file with invert index
+        int res = ToolRunner.run(new Configuration(), new SearchRequest(), args);
+        if (res == 1)
+            System.exit(1);
+
+        // read request string
+        String request = readRequestFile(args[0]);
+        StringTokenizer tokenizer = new StringTokenizer(request);
+
+        SnowballStemmer stemmer = new porterStemmer();
+
+        Map<String, Map<String, Double>> wordsMap = readIndexFile(outputIndexFile);
+        List<Map<String, Double>> documentSets = new ArrayList<Map<String, Double>>();
+
+        // stem each word in request string and corresponding set of documents
+        while (tokenizer.hasMoreTokens()) {
+            String word = tokenizer.nextToken().toLowerCase();
+            stemmer.setCurrent(word);
+            stemmer.stem();
+            Map<String, Double> documentList = wordsMap.get(stemmer.getCurrent());
+            documentSets.add(documentList);
+        }
+
+        // sort list of document sets by size of sets
+        Collections.sort(documentSets, new Comparator<Map<String, Double>>() {
+            public int compare(Map<String, Double> firstSet, Map<String, Double> secondSet) {
+                return firstSet.size() < secondSet.size() ? -1 : 1;
+            }
+        });
+
+        List<Map.Entry<String, Double>> result = findIntersection(documentSets);
+
         // sort result intersection set by tf-idf in reverse order
-        Collections.sort(listFirst, new Comparator<Map.Entry<String, Double>>() {
+        Collections.sort(result, new Comparator<Map.Entry<String, Double>>() {
             public int compare(Map.Entry<String, Double> firstSet, Map.Entry<String, Double> secondSet) {
                 return secondSet.getValue().compareTo(firstSet.getValue());
             }
@@ -182,7 +189,7 @@ public class SearchRequest  extends Configured implements Tool {
         // write result in file "output.txt"
         try{
             PrintWriter writer = new PrintWriter("output.txt", "UTF-8");
-            for (Map.Entry<String, Double> entry : listFirst) {
+            for (Map.Entry<String, Double> entry : result) {
                 writer.println(entry.getKey());
             }
             writer.close();
