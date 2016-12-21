@@ -49,7 +49,7 @@ public class SearchRequest  extends Configured implements Tool {
         return job.waitForCompletion(true) ? 0 : 1;
     }
 
-    private static String readRequestFile(String fileName) throws Exception {
+    public static String readRequestFile(String fileName) throws Exception {
         InputStream is = new FileInputStream(fileName);
         BufferedReader buf = new BufferedReader(new InputStreamReader(is));
 
@@ -63,7 +63,7 @@ public class SearchRequest  extends Configured implements Tool {
         return sb.toString();
     }
 
-    private static Map<String, Map<String, Double>> readIndexFile(String fileName) throws Exception {
+    public static Map<String, Map<String, Double>> readIndexFile(String fileName) throws Exception {
 
         Map<String, Map<String, Double>> index = new HashMap<String, Map<String, Double>>();
 
@@ -93,7 +93,7 @@ public class SearchRequest  extends Configured implements Tool {
         return index;
     }
 
-    static List<Map.Entry<String, Double>> findIntersection(List<Map<String, Double>> documentSets) {
+    public static List<Map.Entry<String, Double>> findIntersection(List<Map<String, Double>> documentSets) {
 
         // sort first document set by documents' names
         List<Map.Entry<String, Double>> listFirst =

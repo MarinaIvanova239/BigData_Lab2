@@ -1,0 +1,3 @@
+Hello:1.in,0.5;2.in,0.6
+dear:3.r,0.4;10zzz.p,12.8999;test.out,12
+friend:text.ru,45

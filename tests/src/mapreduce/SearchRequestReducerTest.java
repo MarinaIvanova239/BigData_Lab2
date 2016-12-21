@@ -21,7 +21,6 @@ public class SearchRequestReducerTest {
     private ReduceDriver<Text, DocumentInfo, Text, TextArrayWritable> driver;
 
     private static final DecimalFormat DF = new DecimalFormat("###.########");
-    private final double threshold = 0.5;
 
     @Before
     public void testSetup() {
