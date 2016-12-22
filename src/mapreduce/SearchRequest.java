@@ -122,9 +122,11 @@ public class SearchRequest  extends Configured implements Tool {
             List<Map.Entry<String, Double>> resultSet = new LinkedList<Map.Entry<String, Double>>();
             while (indexFirst < sizeFirstList && indexSecond < sizeSecondList) {
                 Map.Entry<String, Double> first = listFirst.get(indexFirst);
-                Map.Entry<String, Double> second = listFirst.get(indexSecond);
+                Map.Entry<String, Double> second = listSecond.get(indexSecond);
 
                 if (first.getKey().compareTo(second.getKey()) == 0) {
+                    Double newTfIdf = (first.getValue() + second.getValue()) / 2.0;
+                    first.setValue(newTfIdf);
                     resultSet.add(first);
                     indexFirst++;
                     indexSecond++;

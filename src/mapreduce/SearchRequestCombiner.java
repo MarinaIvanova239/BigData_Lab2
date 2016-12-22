@@ -12,17 +12,17 @@ public class SearchRequestCombiner extends Reducer<Text, DocumentInfo, Text, Doc
             throws IOException, InterruptedException {
 
         // count number of same words in one document
-        Text fileName = null;
+        long fileIndex = 0L;
         int numberWords = 0;
         int sum = 0;
         for (DocumentInfo v : values) {
-            fileName = v.getFileName();
+            fileIndex = v.getFileIndex();
             numberWords = v.getNumberWords();
             sum += v.getNumberToken();
         }
 
         // count tf and save information to context
         double tf = sum / ((double) numberWords);
-        context.write(key, new DocumentInfo(fileName, sum, numberWords, tf, 0.0));
+        context.write(key, new DocumentInfo(fileIndex, sum, numberWords, tf, 0.0));
     }
 }

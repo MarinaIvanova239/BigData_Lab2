@@ -33,13 +33,13 @@ public class SearchRequestReducerTest {
         List<Pair<Text, TextArrayWritable>> out = null;
 
         List<DocumentInfo> values = new ArrayList<DocumentInfo>();
-        values.add(new DocumentInfo(new Text("in1.txt"), 5, 8, 5.0/8.0, 0.0));
-        values.add(new DocumentInfo(new Text("in2.txt"), 2, 13, 2.0/13.0, 0.0));
-        values.add(new DocumentInfo(new Text("in3.txt"), 9, 10, 9.0/10.0, 0.0));
+        values.add(new DocumentInfo(1L, 5, 8, 5.0/8.0, 0.0));
+        values.add(new DocumentInfo(2L, 2, 13, 2.0/13.0, 0.0));
+        values.add(new DocumentInfo(3L, 9, 10, 9.0/10.0, 0.0));
 
         ArrayList<Text> fileList = new ArrayList<Text>();
-        fileList.add(new Text( "in1.txt" + " , " + DF.format(5.0/8.0 * Math.log(21 / 3.0) )));
-        fileList.add(new Text( "in3.txt" + " , " + DF.format(9.0/10.0 * Math.log(21 / 3.0) )));
+        fileList.add(new Text( Long.toString(1L) + " , " + DF.format(5.0/8.0 * Math.log(21 / 3.0) )));
+        fileList.add(new Text( Long.toString(3L) + " , " + DF.format(9.0/10.0 * Math.log(21 / 3.0) )));
 
         try {
             out = driver.withInput(new Text("hello"), values).run();

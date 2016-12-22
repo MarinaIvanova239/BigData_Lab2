@@ -30,9 +30,9 @@ public class SearchRequestCombinerTest {
         List<Pair<Text, DocumentInfo>> out = null;
 
         List<DocumentInfo> values = new ArrayList<DocumentInfo>();
-        values.add(new DocumentInfo(new Text("in1.txt"), 1, 15, 0.0, 0.0));
-        values.add(new DocumentInfo(new Text("in1.txt"), 1, 15, 0.0, 0.0));
-        values.add(new DocumentInfo(new Text("in1.txt"), 1, 15, 0.0, 0.0));
+        values.add(new DocumentInfo(1L, 1, 15, 0.0, 0.0));
+        values.add(new DocumentInfo(1L, 1, 15, 0.0, 0.0));
+        values.add(new DocumentInfo(1L, 1, 15, 0.0, 0.0));
 
         try {
             out = driver.withInput(new Text("hello"), values).run();
@@ -40,7 +40,7 @@ public class SearchRequestCombinerTest {
             fail();
         }
 
-        DocumentInfo result = new DocumentInfo(new Text("in1.txt"), 3, 15, 3.0 / 15.0, 0.0);
+        DocumentInfo result = new DocumentInfo(1L, 3, 15, 3.0 / 15.0, 0.0);
         List<Pair<Text, DocumentInfo>> expected = new ArrayList<Pair<Text, DocumentInfo>>();
         expected.add(new Pair<Text, DocumentInfo>(new Text("hello"), result));
         assertListEquals(expected, out);

@@ -2,6 +2,7 @@ package mapreduce;
 
 import org.junit.Test;
 
+import java.io.File;
 import java.util.*;
 
 import static org.junit.Assert.assertEquals;
@@ -9,7 +10,7 @@ import static org.junit.Assert.assertEquals;
 public class SearchRequestTest {
 
     @Test
-    void checkFindingIntersection() {
+    public void checkFindingIntersection() {
         List<Map<String, Double>> data = new ArrayList<>();
 
         Map<String, Double> firstSet = new HashMap<>();
@@ -29,8 +30,8 @@ public class SearchRequestTest {
 
         List<Map.Entry<String, Double>> expected = new LinkedList<Map.Entry<String, Double>>();
         Map<String, Double> expectedSet = new HashMap<>();
-        expectedSet.put("2.in", 0.6);
-        expectedSet.put("3.in", 0.9);
+        expectedSet.put("2.in", 0.36);
+        expectedSet.put("3.in", 0.75);
 
         for(Map.Entry<String, Double> entry: expectedSet.entrySet()) {
             expected.add(entry);
@@ -40,7 +41,7 @@ public class SearchRequestTest {
     }
 
     @Test
-    void checkReadingIndexFile() throws Exception {
+    public void checkReadingIndexFile() throws Exception {
 
         Map<String, Map<String, Double>> expected = new HashMap<>();
 
@@ -65,7 +66,7 @@ public class SearchRequestTest {
     }
 
     @Test
-    void checkReadingRequestFile() throws Exception {
+    public void checkReadingRequestFile() throws Exception {
         String expected = "Test string result";
         String result = SearchRequest.readRequestFile("files/test_request.txt");
         assertEquals(expected, result);

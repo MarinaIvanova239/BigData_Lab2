@@ -33,7 +33,7 @@ public class SearchRequestMapper extends Mapper<LongWritable, Text, Text, Docume
             stemmer.setCurrent(word);
             stemmer.stem();
             stemWord.set(stemmer.getCurrent());
-            context.write(stemWord, new DocumentInfo(new Text(fileName), 1, numberTokens, 0.0, 0.0));
+            context.write(stemWord, new DocumentInfo(key.get(),1, numberTokens, 0.0, 0.0));
         }
     }
 }

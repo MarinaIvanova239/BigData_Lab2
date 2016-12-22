@@ -1,25 +1,32 @@
 package mapreduce;
 
 import org.apache.hadoop.io.Text;
+import org.apache.hadoop.io.Writable;
 
-public class DocumentInfo {
+import java.io.DataInput;
+import java.io.DataOutput;
+import java.io.IOException;
 
-    Text fileName;
+public class DocumentInfo implements Writable {
+
+    long fileIndex;
     int numberToken;
     int numberWords;
     double tf;
     double idf;
 
-    DocumentInfo(Text fileName, int numberToken, int numberWords, double tf, double idf) {
-        this.fileName = fileName;
+    public DocumentInfo() {};
+
+    DocumentInfo(long fileIndex, int numberToken, int numberWords, double tf, double idf) {
+        this.fileIndex = fileIndex;
         this.numberToken = numberToken;
         this.numberWords = numberWords;
         this.tf = tf;
         this.idf = idf;
     }
 
-    Text getFileName() {
-        return this.fileName;
+    long getFileIndex() {
+        return this.fileIndex;
     }
 
     int getNumberToken() {
@@ -38,8 +45,8 @@ public class DocumentInfo {
         return this.idf;
     }
 
-    void setFileName(Text fileName) {
-        this.fileName = fileName;
+    void setFileIndex(long fileIndex) {
+        this.fileIndex = fileIndex;
     }
 
     void setNumberToken(int numberToken) {
@@ -56,5 +63,29 @@ public class DocumentInfo {
 
     void setIdf(double idf) {
         this.idf = idf;
+    }
+
+    public void write(DataOutput out) throws IOException {
+        out.writeLong(fileIndex);
+        out.writeInt(numberToken);
+        out.writeInt(numberWords);
+        out.writeDouble(tf);
+        out.writeDouble(idf);
+    }
+
+    public void readFields(DataInput in) throws IOException {
+        fileIndex = in.readLong();
+        numberToken = in.readInt();
+        numberWords = in.readInt();
+        tf = in.readDouble();
+        idf = in.readDouble();
+    }
+
+    public String toString() {
+        return Long.toString(fileIndex) + ", " +
+                Integer.toString(numberToken) + ", " +
+                Integer.toString(numberWords) + ", " +
+                Double.toString(tf) + ", " +
+                Double.toString(idf);
     }
 }
