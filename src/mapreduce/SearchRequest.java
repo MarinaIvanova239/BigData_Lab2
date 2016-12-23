@@ -19,8 +19,6 @@ import java.util.*;
 
 public class SearchRequest  extends Configured implements Tool {
 
-    static private final String outputIndexFile = "output_index.txt";
-
     public int run(String[] args) throws Exception {
 
         Configuration conf = getConf();
@@ -42,9 +40,11 @@ public class SearchRequest  extends Configured implements Tool {
 
         // set input and output path and classes
         FileInputFormat.addInputPath(job, new Path(args[1]));
-        FileOutputFormat.setOutputPath(job, new Path(outputIndexFile));
+        FileOutputFormat.setOutputPath(job, new Path(args[2]));
 
+        job.setMapOutputKeyClass(Text.class);
         job.setOutputKeyClass(Text.class);
+        job.setMapOutputValueClass(DocumentInfo.class);
         job.setOutputValueClass(TextArrayWritable.class);
 
         return job.waitForCompletion(true) ? 0 : 1;
@@ -58,10 +58,18 @@ public class SearchRequest  extends Configured implements Tool {
         String line = buf.readLine();
         StringBuilder sb = new StringBuilder();
         while(line != null) {
-            sb.append(line).append("\n");
+            sb.append(line);
             line = buf.readLine();
         }
         return sb.toString();
+    }
+
+    public static String removeChar(String s, char c) {
+        String r = "";
+        for (int i = 0; i < s.length(); i ++) {
+            if (s.charAt(i) != c) r += s.charAt(i);
+        }
+        return r;
     }
 
     public static Map<String, Map<Long, Double>> readIndexFile(String fileName) throws Exception {
@@ -82,12 +90,13 @@ public class SearchRequest  extends Configured implements Tool {
             // get document set with name of document and tf-idf
             for (String elem: array2) {
                 String[] array3 = elem.split(",");
-                documentList.put(Long.parseLong(array3[0]), Double.parseDouble(array3[1]));
+                documentList.put(Long.parseLong(array3[0].trim()), Double.parseDouble(array3[1].trim()));
             }
 
             // add to list word and corresponding document set
             for (int i = 0; i < array2.length; i++) {
-                index.put(array1[0], documentList);
+                String word = removeChar(array1[0].trim(), '\u0000');
+                index.put(word, documentList);
             }
         }
 
@@ -158,10 +167,11 @@ public class SearchRequest  extends Configured implements Tool {
         // read request string
         String request = readRequestFile(args[0]);
         StringTokenizer tokenizer = new StringTokenizer(request);
+        int numTokens = tokenizer.countTokens();
 
         SnowballStemmer stemmer = new porterStemmer();
 
-        Map<String, Map<Long, Double>> wordsMap = readIndexFile(outputIndexFile);
+        Map<String, Map<Long, Double>> wordsMap = readIndexFile(args[2] + "/part-r-00000");
         List<Map<Long, Double>> documentSets = new ArrayList<Map<Long, Double>>();
 
         // stem each word in request string and corresponding set of documents
@@ -169,9 +179,17 @@ public class SearchRequest  extends Configured implements Tool {
             String word = tokenizer.nextToken().toLowerCase();
             stemmer.setCurrent(word);
             stemmer.stem();
-            Map<Long, Double> documentList = wordsMap.get(stemmer.getCurrent());
-            documentSets.add(documentList);
+            if (wordsMap.containsKey(stemmer.getCurrent())) {
+                Map<Long, Double> documentList = wordsMap.get(stemmer.getCurrent());
+                documentSets.add(documentList);
+            } else if (wordsMap.containsKey(word.trim())) {
+                Map<Long, Double> documentList = wordsMap.get(word);
+                documentSets.add(documentList);
+            }
         }
+
+        if (documentSets.size() < numTokens )
+            System.exit(2);
 
         // sort list of document sets by size of sets
         Collections.sort(documentSets, new Comparator<Map<Long, Double>>() {
@@ -191,7 +209,7 @@ public class SearchRequest  extends Configured implements Tool {
 
         // write result in file "output.txt"
         try{
-            PrintWriter writer = new PrintWriter("output.txt", "UTF-8");
+            PrintWriter writer = new PrintWriter(args[3], "UTF-8");
             for (Map.Entry<Long, Double> entry : result) {
                 writer.println(entry.getKey());
             }

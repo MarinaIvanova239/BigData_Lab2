@@ -18,10 +18,10 @@ public class TextArrayWritable extends ArrayWritable {
     public String toString() {
         Writable[] values = get();
 
-        if (values.length == 0)
-            return null;
+        if (values == null)
+            return "";
 
-        String resultString = values[0].toString();
+        String resultString = " : " + values[0].toString();
         for (int i = 1; i < values.length; i++) {
             resultString += " ; " + values[i].toString();
         }

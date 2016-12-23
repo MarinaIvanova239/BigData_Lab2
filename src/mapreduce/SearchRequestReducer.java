@@ -44,6 +44,7 @@ public class SearchRequestReducer extends Reducer<Text, DocumentInfo, Text, Text
         }
 
         // save result to context
-        context.write(key, new TextArrayWritable(fileList.toArray(new Text[fileList.size()])));
+        if (fileList.size() != 0)
+            context.write(key, new TextArrayWritable(fileList.toArray(new Text[fileList.size()])));
     }
 }
