@@ -11,8 +11,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import static junit.framework.TestCase.fail;
 import static org.apache.hadoop.mrunit.testutil.ExtendedAssert.assertListEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
 public class SearchRequestCombinerTest {
 
@@ -43,6 +44,6 @@ public class SearchRequestCombinerTest {
         DocumentInfo result = new DocumentInfo(1L, 3, 15, 3.0 / 15.0, 0.0);
         List<Pair<Text, DocumentInfo>> expected = new ArrayList<Pair<Text, DocumentInfo>>();
         expected.add(new Pair<Text, DocumentInfo>(new Text("hello"), result));
-        assertListEquals(expected, out);
+        assertEquals(expected, out);
     }
 }

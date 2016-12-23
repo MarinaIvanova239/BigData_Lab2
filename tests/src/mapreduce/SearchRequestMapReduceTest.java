@@ -16,28 +16,30 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.apache.hadoop.mrunit.testutil.ExtendedAssert.assertListEquals;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
 public class SearchRequestMapReduceTest {
 
     private Mapper<LongWritable, Text, Text, DocumentInfo> mapper;
     private Reducer<Text, DocumentInfo, Text, TextArrayWritable> reducer;
+    private Reducer<Text, DocumentInfo, Text, DocumentInfo> combiner;
     private MapReduceDriver<LongWritable, Text, Text, DocumentInfo, Text, TextArrayWritable> driver;
     Configuration conf = new Configuration();
-
-    private static final DecimalFormat DF = new DecimalFormat("###.########");
 
     @Before
     public void testSetup() {
         mapper = new SearchRequestMapper();
         reducer = new SearchRequestReducer();
+        combiner = new SearchRequestCombiner();
         driver = new MapReduceDriver<LongWritable, Text, Text, DocumentInfo, Text, TextArrayWritable>();
         driver.setMapper(mapper);
         driver.setReducer(reducer);
+        driver.setCombiner(combiner);
     }
 
     @Test
-    public void testInvertIndex() {
+    public void testMapReduceWork() {
 
         conf.setInt("numFiles", 10);
         driver.setConfiguration(conf);
@@ -51,17 +53,17 @@ public class SearchRequestMapReduceTest {
         }
 
         ArrayList<Text> fileListHello = new ArrayList<Text>();
-        fileListHello.add(new Text( Long.toString(0L) + " , " + DF.format(2.0/3.0 * Math.log(10 / 1.0) )));
+        fileListHello.add(new Text( Long.toString(0L) + " , " + Double.toString(2.0/3.0 * Math.log(10 / 1.0) )));
         TextArrayWritable resultHello = new TextArrayWritable(fileListHello.toArray(new Text[fileListHello.size()]));
 
         ArrayList<Text> fileListWorld = new ArrayList<Text>();
-        fileListWorld.add(new Text( Long.toString(0L) + " , " + DF.format(1.0/3.0 * Math.log(10 / 1.0) )));
+        fileListWorld.add(new Text( Long.toString(0L) + " , " + Double.toString(1.0/3.0 * Math.log(10 / 1.0) )));
         TextArrayWritable resultWorld = new TextArrayWritable(fileListWorld.toArray(new Text[fileListWorld.size()]));
 
         List<Pair<Text, TextArrayWritable>> expected = new ArrayList<Pair<Text, TextArrayWritable>>();
         expected.add(new Pair<Text, TextArrayWritable>(new Text("hello"), resultHello));
         expected.add(new Pair<Text, TextArrayWritable>(new Text("world"), resultWorld));
 
-        assertListEquals(expected, out);
+        assertEquals(expected, out);
     }
 }

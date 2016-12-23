@@ -2,7 +2,7 @@ package mapreduce;
 
 import java.io.IOException;
 import java.text.DecimalFormat;
-import java.util.ArrayList;
+import java.util.*;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.io.Text;
@@ -10,7 +10,6 @@ import org.apache.hadoop.mapreduce.Reducer;
 
 public class SearchRequestReducer extends Reducer<Text, DocumentInfo, Text, TextArrayWritable> {
 
-    private static final DecimalFormat DF = new DecimalFormat("###.########");
     private final double threshold = 0.5;
 
     @Override
@@ -23,16 +22,23 @@ public class SearchRequestReducer extends Reducer<Text, DocumentInfo, Text, Text
 
         // count number of documents which contain current word
         int numberDocumentsWithToken = 0;
+        Map<Long, Double> result = new HashMap<>();
+
+        // count number of documents with current token
         for (DocumentInfo v : values) {
+            result.put(v.getFileIndex(), v.getTf());
             numberDocumentsWithToken++;
         }
 
-        // count idf and tf-idf and save document, depending on comparison with threshold
-        for (DocumentInfo v : values) {
-            v.setIdf(Math.log(numberDocumentsInCorpus / (double) numberDocumentsWithToken));
-            double tfidf = v.getTf() * v.getIdf();
+        double idf = Math.log(numberDocumentsInCorpus / (double) numberDocumentsWithToken);
+
+        List<Map.Entry<Long, Double>> list =
+                new LinkedList<Map.Entry<Long, Double>>( result.entrySet() );
+
+        for (int i = 0; i < list.size(); i++) {
+            double tfidf = list.get(i).getValue() * idf;
             if (tfidf > threshold) {
-                Text newElem = new Text( Long.toString(v.getFileIndex()) + " , " + DF.format(tfidf) );
+                Text newElem = new Text( Long.toString(list.get(i).getKey()) + " , " + Double.toString(tfidf) );
                 fileList.add(newElem);
             }
         }

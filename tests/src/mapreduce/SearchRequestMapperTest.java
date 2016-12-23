@@ -49,7 +49,7 @@ public class SearchRequestMapperTest {
         expected.add(new Pair<Text, DocumentInfo>(new Text("hello"), first));
         expected.add(new Pair<Text, DocumentInfo>(new Text("world"), second));
         expected.add(new Pair<Text, DocumentInfo>(new Text("hello"), first));
-        assertListEquals(expected, out);
+        assertEquals(expected, out);
     }
 
 }

@@ -22,7 +22,6 @@ public class SearchRequestMapper extends Mapper<LongWritable, Text, Text, Docume
         SnowballStemmer stemmer = new porterStemmer();
 
         // get name of file and number of words in it
-        String fileName = ((FileSplit) context.getInputSplit()).getPath().getName();
         String line = value.toString();
         StringTokenizer tokenizer = new StringTokenizer(line);
         int numberTokens = tokenizer.countTokens();
