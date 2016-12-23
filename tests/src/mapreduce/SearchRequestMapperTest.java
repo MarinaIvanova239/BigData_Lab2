@@ -25,12 +25,8 @@ public class SearchRequestMapperTest {
 
     @Before
     public void testSetup() {
-        Configuration conf = new Configuration();
-        conf.set("io.serializations","org.apache.hadoop.io.serializer.JavaSerialization,"
-                + "org.apache.hadoop.io.serializer.WritableSerialization");
         mapper = new SearchRequestMapper();
         driver = new MapDriver<LongWritable, Text, Text, DocumentInfo>(mapper);
-        driver.setConfiguration(conf);
     }
 
     @Test
