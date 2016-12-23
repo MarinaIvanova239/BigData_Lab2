@@ -1,5 +1,6 @@
 package mapreduce;
 
+import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Reducer;
 import org.apache.hadoop.mrunit.mapreduce.ReduceDriver;
@@ -19,6 +20,7 @@ public class SearchRequestReducerTest {
 
     private Reducer<Text, DocumentInfo, Text, TextArrayWritable> reducer;
     private ReduceDriver<Text, DocumentInfo, Text, TextArrayWritable> driver;
+    Configuration conf = new Configuration();
 
     private static final DecimalFormat DF = new DecimalFormat("###.########");
 
@@ -30,6 +32,9 @@ public class SearchRequestReducerTest {
 
     @Test
     public void testMultiWords() {
+        conf.setInt("numFiles", 3);
+        driver.setConfiguration(conf);
+
         List<Pair<Text, TextArrayWritable>> out = null;
 
         List<DocumentInfo> values = new ArrayList<DocumentInfo>();
