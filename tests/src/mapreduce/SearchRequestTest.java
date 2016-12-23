@@ -11,29 +11,29 @@ public class SearchRequestTest {
 
     @Test
     public void checkFindingIntersection() {
-        List<Map<String, Double>> data = new ArrayList<>();
+        List<Map<Long, Double>> data = new ArrayList<>();
 
-        Map<String, Double> firstSet = new HashMap<>();
-        firstSet.put("1.in", 0.5);
-        firstSet.put("2.in", 0.6);
-        firstSet.put("3.in", 0.9);
+        Map<Long, Double> firstSet = new HashMap<>();
+        firstSet.put(1L, 0.5);
+        firstSet.put(2L, 0.6);
+        firstSet.put(3L, 0.9);
 
-        Map<String, Double> secondSet = new HashMap<>();
-        secondSet.put("3.in", 0.6);
-        secondSet.put("alt.in", 0.6);
-        secondSet.put("2.in", 0.12);
+        Map<Long, Double> secondSet = new HashMap<>();
+        secondSet.put(3L, 0.6);
+        secondSet.put(10L, 0.6);
+        secondSet.put(2L, 0.12);
 
         data.add(firstSet);
         data.add(secondSet);
 
-        List<Map.Entry<String, Double>> result = SearchRequest.findIntersection(data);
+        List<Map.Entry<Long, Double>> result = SearchRequest.findIntersection(data);
 
-        List<Map.Entry<String, Double>> expected = new LinkedList<Map.Entry<String, Double>>();
-        Map<String, Double> expectedSet = new HashMap<>();
-        expectedSet.put("2.in", 0.36);
-        expectedSet.put("3.in", 0.75);
+        List<Map.Entry<Long, Double>> expected = new LinkedList<Map.Entry<Long, Double>>();
+        Map<Long, Double> expectedSet = new HashMap<>();
+        expectedSet.put(2L, 0.36);
+        expectedSet.put(3L, 0.75);
 
-        for(Map.Entry<String, Double> entry: expectedSet.entrySet()) {
+        for(Map.Entry<Long, Double> entry: expectedSet.entrySet()) {
             expected.add(entry);
         }
 
@@ -43,24 +43,24 @@ public class SearchRequestTest {
     @Test
     public void checkReadingIndexFile() throws Exception {
 
-        Map<String, Map<String, Double>> expected = new HashMap<>();
+        Map<String, Map<Long, Double>> expected = new HashMap<>();
 
-        Map<String, Double> documentsFirst = new HashMap<>();
-        documentsFirst.put("1.in", 0.5);
-        documentsFirst.put("2.in", 0.6);
+        Map<Long, Double> documentsFirst = new HashMap<>();
+        documentsFirst.put(1L, 0.5);
+        documentsFirst.put(2L, 0.6);
         expected.put("Hello", documentsFirst);
 
-        Map<String, Double> documentsSecond = new HashMap<>();
-        documentsSecond.put("3.r", 0.4);
-        documentsSecond.put("10zzz.p", 12.8999);
-        documentsSecond.put("test.out", 12.0);
+        Map<Long, Double> documentsSecond = new HashMap<>();
+        documentsSecond.put(3L, 0.4);
+        documentsSecond.put(10L, 12.8999);
+        documentsSecond.put(28L, 12.0);
         expected.put("dear", documentsSecond);
 
-        Map<String, Double> documentsThird = new HashMap<>();
-        documentsThird.put("text.ru", 45.0);
+        Map<Long, Double> documentsThird = new HashMap<>();
+        documentsThird.put(666L, 45.0);
         expected.put("friend", documentsThird);
 
-        Map<String, Map<String, Double>> result = SearchRequest.readIndexFile("files/test_index.txt");
+        Map<String, Map<Long, Double>> result = SearchRequest.readIndexFile("files/test_index.txt");
 
         assertEquals(expected, result);
     }
