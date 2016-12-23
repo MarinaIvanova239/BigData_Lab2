@@ -67,7 +67,7 @@ public class SearchRequestTest {
 
     @Test
     public void checkReadingRequestFile() throws Exception {
-        String expected = "Test string result";
+        String expected = "Test string result\n";
         String result = SearchRequest.readRequestFile("files/test_request.txt");
         assertEquals(expected, result);
     }

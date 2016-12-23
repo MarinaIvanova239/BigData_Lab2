@@ -7,10 +7,12 @@ import org.apache.hadoop.mrunit.types.Pair;
 import org.junit.Before;
 import org.junit.Test;
 
+import javax.print.Doc;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import static mapreduce.CustomComparison.listsDocsAreEqual;
 import static org.apache.hadoop.mrunit.testutil.ExtendedAssert.assertListEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
@@ -44,6 +46,6 @@ public class SearchRequestCombinerTest {
         DocumentInfo result = new DocumentInfo(1L, 3, 15, 3.0 / 15.0, 0.0);
         List<Pair<Text, DocumentInfo>> expected = new ArrayList<Pair<Text, DocumentInfo>>();
         expected.add(new Pair<Text, DocumentInfo>(new Text("hello"), result));
-        assertEquals(expected, out);
+        assertEquals(true, listsDocsAreEqual(expected, out));
     }
 }

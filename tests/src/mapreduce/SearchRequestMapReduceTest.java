@@ -15,6 +15,7 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 
+import static mapreduce.CustomComparison.listsArrayAreEqual;
 import static org.apache.hadoop.mrunit.testutil.ExtendedAssert.assertListEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
@@ -64,6 +65,6 @@ public class SearchRequestMapReduceTest {
         expected.add(new Pair<Text, TextArrayWritable>(new Text("hello"), resultHello));
         expected.add(new Pair<Text, TextArrayWritable>(new Text("world"), resultWorld));
 
-        assertEquals(expected, out);
+        assertEquals(true, listsArrayAreEqual(expected, out));
     }
 }

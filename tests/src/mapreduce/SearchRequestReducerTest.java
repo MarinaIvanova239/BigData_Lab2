@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.text.DecimalFormat;
 import java.util.*;
 
+import static mapreduce.CustomComparison.listsArrayAreEqual;
 import static org.apache.hadoop.mrunit.testutil.ExtendedAssert.assertListEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
@@ -53,6 +54,6 @@ public class SearchRequestReducerTest {
         TextArrayWritable result = new TextArrayWritable(fileList.toArray(new Text[fileList.size()]));
         List<Pair<Text, TextArrayWritable>> expected = new ArrayList<Pair<Text, TextArrayWritable>>();
         expected.add(new Pair<Text, TextArrayWritable>(new Text("hello"), result));
-        assertEquals(expected, out);
+        assertEquals(true, listsArrayAreEqual(expected, out));
     }
 }

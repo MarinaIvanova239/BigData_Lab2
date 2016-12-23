@@ -13,6 +13,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import static mapreduce.CustomComparison.listsDocsAreEqual;
 import static org.apache.hadoop.mrunit.testutil.ExtendedAssert.assertListEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
@@ -49,7 +50,7 @@ public class SearchRequestMapperTest {
         expected.add(new Pair<Text, DocumentInfo>(new Text("hello"), first));
         expected.add(new Pair<Text, DocumentInfo>(new Text("world"), second));
         expected.add(new Pair<Text, DocumentInfo>(new Text("hello"), first));
-        assertEquals(expected, out);
+        assertEquals(true, listsDocsAreEqual(expected, out));
     }
 
 }
